@@ -1,6 +1,6 @@
 # Restuarant-List
 
-![Index page about Restaurant List](Restuarant-List/views/截圖 2023-04-23 下午4.28.54.png)
+![Index page about Restaurant List](../views/截圖 2023-04-23 下午4.28.54.png)
 
 ## 介紹
 
