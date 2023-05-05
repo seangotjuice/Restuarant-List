@@ -1,5 +1,7 @@
-const Rest = require("../rest"); // 載入 todo model
-const mongoose = require("mongoose"); // 載入 mongoose
+const Rest = require("../rest");
+const mongoose = require("mongoose");
+const restList = require("../../restaurant.json").results;
+
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
@@ -16,5 +18,11 @@ db.on("error", () => {
 });
 // 連線成功
 db.once("open", () => {
-  console.log("mongodb connected!");
+  console.log("running restSeeder.js...");
+  Rest.create(restList)
+    .then(() => {
+      console.log("restSeeder done!");
+      db.close();
+    })
+    .catch((err) => console.log(err));
 });
