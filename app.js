@@ -3,13 +3,12 @@ const mongoose = require("mongoose");
 // const methodOverride = require("method-override");
 const Restaurant = require("./models/rest");
 const app = express();
-const bodyParser = require("body-parser");
+// const bodyParser = require("body-parser");
 
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-mongoose.connect(process.env.MONGODB_URI); // 設定連線到 mongoDB
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -36,7 +35,7 @@ app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true })); // added
-app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(methodOverride("_method")); // added
 
 ////////////////////////////////////////
@@ -48,7 +47,6 @@ app.get("/", (req, res) => {
     .then((rest) => res.render("index", { rest }))
     .catch((err) => console.log(err));
 });
-
 // ----------資訊----------
 app.get("/restaurants/:restaurantId/detail", (req, res) => {
   const { restaurantId } = req.params;
@@ -60,13 +58,25 @@ app.get("/restaurants/:restaurantId/detail", (req, res) => {
     });
 });
 
-// 搜尋
+// ----------搜尋----------
 app.get("/search", (req, res) => {
+  if (!req.query.keyword) {
+    return res.redirect("/");
+  }
+
   const keyword = req.query.keyword;
-  const rest = restaurantList.results.filter((r) => {
-    return r.name.toLowerCase().includes(keyword.toLowerCase());
-  });
-  res.render("index", { rest, keyword });
+
+  Restaurant.find({})
+    .lean()
+    .then((restData) => {
+      const rest = restData.filter(
+        (r) =>
+          r.name.toLowerCase().includes(keyword.toLowerCase()) ||
+          r.category.includes(keyword.toLowerCase())
+      );
+      res.render("index", { rest, keyword: keyword });
+    })
+    .catch((err) => console.log(err));
 });
 
 // ----------新增餐廳-----------
@@ -74,9 +84,9 @@ app.get("/restaurants/new", (req, res) => {
   res.render("new");
 });
 
-// 更新新增（？）
+// 更新新增
 app.post("/restaurants/create", (req, res) => {
-  Restaurant.create(req.body)
+  return Restaurant.create(req.body)
     .then(() => res.redirect("/"))
     .catch((err) => console.log(err));
 });
@@ -92,41 +102,35 @@ app.get("/restaurants/:restaurantId/edit", (req, res) => {
     .catch((err) => console.log(err));
 });
 
-// 更新編輯（???）
-app.get("/restaurants/:restaurantId", (req, res) => {
+// 更新編輯
+app.post("/restaurants/:restaurantId", (req, res) => {
   const { restaurantId } = req.params;
-  console.log("req.query", req.query); // 得到使用者輸入
-  const {
-    name,
-    name_en,
-    category,
-    image,
-    location,
-    phone,
-    google_map,
-    rating,
-    description,
-  } = req.query;
-  Restaurant.findByIdAndUpdate(restaurantId, req.body)
+  const data = req.body; // 取得使用者輸入資料
+
+  // default image
+  if (data.image === "") {
+    data.image =
+      "https://media.istockphoto.com/id/1372294434/photo/folded-white-napkins-on-table-mat-stainless-steel-knives-forks-and-crystal-drinking-glasses.jpg?s=1024x1024&w=is&k=20&c=SMi5S1mcyeHC0W8BdW7GZpmTTl6zfEzoZcl22863fog=";
+  }
+
+  return Restaurant.findById(restaurantId)
     .then((resolve) => {
-      // console.log(resolve); // 得到資料
-
-      // 全部修改(如何更有效率？)
-      resolve.name = name;
-      resolve.name_en = name_en;
-      resolve.category = category;
-      resolve.image = image;
-      resolve.location = location;
-      resolve.phone = phone;
-      resolve.google_map = google_map;
-      resolve.rating = rating;
-      resolve.description = description;
-
+      // console.log(resolve);
+      resolve.name = data.name;
+      resolve.name_en = data.name_en;
+      resolve.category = data.category;
+      resolve.image = data.image;
+      resolve.location = data.location;
+      resolve.phone = data.phone;
+      resolve.google_map = data.google_map;
+      resolve.rating = data.rating;
+      resolve.description = data.description;
+      resolve.save();
       res.redirect(`/restaurants/${restaurantId}/detail`);
-      return resolve.save();
     })
     .catch((err) => console.log(err));
 });
+
 // ----------刪除----------
 app.get("/restaurants/:restaurantId/delete", (req, res) => {
   const { restaurantId } = req.params;
