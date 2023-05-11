@@ -107,12 +107,6 @@ app.post("/restaurants/:restaurantId", (req, res) => {
   const { restaurantId } = req.params;
   const data = req.body; // 取得使用者輸入資料
 
-  // default image
-  if (data.image === "") {
-    data.image =
-      "https://media.istockphoto.com/id/1372294434/photo/folded-white-napkins-on-table-mat-stainless-steel-knives-forks-and-crystal-drinking-glasses.jpg?s=1024x1024&w=is&k=20&c=SMi5S1mcyeHC0W8BdW7GZpmTTl6zfEzoZcl22863fog=";
-  }
-
   return Restaurant.findById(restaurantId)
     .then((resolve) => {
       // console.log(resolve);
@@ -126,6 +120,8 @@ app.post("/restaurants/:restaurantId", (req, res) => {
       resolve.rating = data.rating;
       resolve.description = data.description;
       resolve.save();
+    })
+    .then(() => {
       res.redirect(`/restaurants/${restaurantId}/detail`);
     })
     .catch((err) => console.log(err));
