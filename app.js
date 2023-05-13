@@ -1,10 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
-// const methodOverride = require("method-override");
+const methodOverride = require("method-override");
 const Restaurant = require("./models/rest");
+const exphbs = require("express-handlebars");
+const restaurantList = require("./restaurant.json");
 const app = express();
-// const bodyParser = require("body-parser");
-
 if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
@@ -28,15 +28,12 @@ db.once("open", () => {
 const port = 3000;
 
 // express-handlebars
-const exphbs = require("express-handlebars");
-const restaurantList = require("./restaurant.json");
 
 app.engine("handlebars", exphbs({ defaultLayout: "main" }));
 app.set("view engine", "handlebars");
 app.use(express.static("public"));
-app.use(express.urlencoded({ extended: true })); // added
-// app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(methodOverride("_method")); // added
+app.use(express.urlencoded({ extended: true })); // body-parser
+app.use(methodOverride("_method"));
 
 ////////////////////////////////////////
 
@@ -47,8 +44,21 @@ app.get("/", (req, res) => {
     .then((rest) => res.render("index", { rest }))
     .catch((err) => console.log(err));
 });
-// ----------資訊----------
-app.get("/restaurants/:restaurantId/detail", (req, res) => {
+// ----------新增餐廳-----------
+// 為何(這route必須寫在 "瀏覽一個" 前面)，放在搜尋後面跑不動
+app.get("/restaurants/new", (req, res) => {
+  return res.render("new");
+});
+
+// 更新新增
+app.post("/restaurants", (req, res) => {
+  return Restaurant.create(req.body)
+    .then(() => res.redirect("/"))
+    .catch((err) => console.log(err));
+});
+
+// ----------瀏覽一筆----------
+app.get("/restaurants/:restaurantId", (req, res) => {
   const { restaurantId } = req.params;
   Restaurant.findById(restaurantId)
     .lean()
@@ -79,18 +89,6 @@ app.get("/search", (req, res) => {
     .catch((err) => console.log(err));
 });
 
-// ----------新增餐廳-----------
-app.get("/restaurants/new", (req, res) => {
-  res.render("new");
-});
-
-// 更新新增
-app.post("/restaurants/create", (req, res) => {
-  return Restaurant.create(req.body)
-    .then(() => res.redirect("/"))
-    .catch((err) => console.log(err));
-});
-
 // ----------編輯餐廳----------
 app.get("/restaurants/:restaurantId/edit", (req, res) => {
   const { restaurantId } = req.params;
@@ -103,7 +101,7 @@ app.get("/restaurants/:restaurantId/edit", (req, res) => {
 });
 
 // 更新編輯
-app.post("/restaurants/:restaurantId", (req, res) => {
+app.put("/restaurants/:restaurantId", (req, res) => {
   const { restaurantId } = req.params;
   const data = req.body; // 取得使用者輸入資料
 
@@ -122,13 +120,13 @@ app.post("/restaurants/:restaurantId", (req, res) => {
       resolve.save();
     })
     .then(() => {
-      res.redirect(`/restaurants/${restaurantId}/detail`);
+      res.redirect(`/restaurants/${restaurantId}`);
     })
     .catch((err) => console.log(err));
 });
 
 // ----------刪除----------
-app.get("/restaurants/:restaurantId/delete", (req, res) => {
+app.delete("/restaurants/:restaurantId", (req, res) => {
   const { restaurantId } = req.params;
 
   Restaurant.findById(restaurantId)

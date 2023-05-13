@@ -56,13 +56,22 @@
           </div>
 
         </div>
-        <div class="crud-container">
+        <div
+          class="crud-container"
+          style="display:flex; justify-content:space-evenly"
+        >
           <a href="/restaurants/{{this._id}}/edit">Edit</a>
-          <a
-            href="/restaurants/{{this._id}}/detail"
-            class="text-secondary"
-          >Detail</a>
-          <a href="/restaurants/{{this._id}}/delete">Delete</a>
+          <a href="/restaurants/{{this._id}}" class="text-secondary">Detail</a>
+          <form action="/restaurants/{{this._id}}?_method=DELETE" method="POST">
+            <button
+              type="submit"
+              class="btn btn-danger btn-sm text-white"
+            >Delete</button>
+          </form>
+          {{!-- <a
+            href="/restaurants/{{this._id}}?_method=DELETE"
+            method="POST"
+          >Delete</a> --}}
         </div>
 
       </div>
