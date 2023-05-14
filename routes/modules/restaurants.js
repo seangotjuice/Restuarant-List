@@ -6,7 +6,7 @@ const Restaurant = require("../../models/rest");
 // 2. 把路由的前綴詞 /todos 刪掉，這一段已經在總路由器檢查完畢
 
 // ----------新增餐廳-----------
-// 為何(這route必須寫在 "瀏覽一個" 前面)，放在搜尋後面跑不動
+// Ｑ：為何此功能兩個route必須寫在 "瀏覽一筆" 前面，放在搜尋後面會跑不動
 router.get("/new", (req, res) => {
   return res.render("new");
 });
@@ -15,6 +15,30 @@ router.get("/new", (req, res) => {
 router.post("", (req, res) => {
   return Restaurant.create(req.body)
     .then(() => res.redirect("/"))
+    .catch((err) => console.log(err));
+});
+
+// ----------排序----------
+router.get("/name/:ascOrDesc", (req, res) => {
+  const { ascOrDesc } = req.params;
+  Restaurant.find()
+    .lean()
+    .sort({ name: ascOrDesc })
+    .then((rest) => res.render("index", { rest }))
+    .catch((err) => console.log(err));
+});
+router.get("/category/asc", (req, res) => {
+  Restaurant.find()
+    .lean()
+    .sort({ category: "asc" })
+    .then((rest) => res.render("index", { rest }))
+    .catch((err) => console.log(err));
+});
+router.get("/location/asc", (req, res) => {
+  Restaurant.find()
+    .lean()
+    .sort({ location: "asc" })
+    .then((rest) => res.render("index", { rest }))
     .catch((err) => console.log(err));
 });
 

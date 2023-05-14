@@ -21,7 +21,31 @@
           </div>
         </div>
       </form>
-      <div class="text-end">
+      <div
+        class="text-end"
+        style="display
+      :flex; justify-content:flex-end"
+      >
+        <div class="dropdown">
+          <button
+            class="btn btn-secondary dropdown-toggle"
+            type="button"
+            id="dropdownMenuButton"
+            data-toggle="dropdown"
+            aria-haspopup="true"
+            aria-expanded="false"
+            style="margin-right
+            :30px"
+          >
+            Sort
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="/restaurants/name/asc">A~Z</a>
+            <a class="dropdown-item" href="/restaurants/name/desc">Z~A</a>
+            <a class="dropdown-item" href="/restaurants/category/asc">類別</a>
+            <a class="dropdown-item" href="/restaurants/location/asc">地區</a>
+          </div>
+        </div>
         <a href="/restaurants/new"><button
             class="btn btn-primary"
           >新增餐廳</button></a>

@@ -1,6 +1,6 @@
 # Restuarant-List
 
-![Index page about Restaurant List](./views/restaurant_snapshot.png)
+![Index page about Restaurant List](./public/snapshots/snapshot_restaurant.png)
 
 ## 介紹
 
@@ -12,6 +12,7 @@
 - 瀏覽餐廳的詳細資訊
 - 連結餐廳的地址到 Google 地圖
 - 搜尋特定餐廳
+- 可依餐廳名字、類別、地址排序
 
 ## 開始使用
 
