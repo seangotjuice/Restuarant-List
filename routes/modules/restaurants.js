@@ -53,26 +53,26 @@ router.get("/:restaurantId", (req, res) => {
     });
 });
 
-// ----------搜尋----------
-router.get("/search", (req, res) => {
-  if (!req.query.keyword) {
-    return res.redirect("/");
-  }
+// // ----------搜尋----------
+// router.get("/search", (req, res) => {
+//   if (!req.query.keyword) {
+//     return res.redirect("/");
+//   }
 
-  const keyword = req.query.keyword;
+//   const keyword = req.query.keyword;
 
-  Restaurant.find({})
-    .lean()
-    .then((restData) => {
-      const rest = restData.filter(
-        (r) =>
-          r.name.toLowerCase().includes(keyword.toLowerCase()) ||
-          r.category.includes(keyword.toLowerCase())
-      );
-      res.render("index", { rest, keyword: keyword });
-    })
-    .catch((err) => console.log(err));
-});
+//   Restaurant.find({})
+//     .lean()
+//     .then((restData) => {
+//       const rest = restData.filter(
+//         (r) =>
+//           r.name.toLowerCase().includes(keyword.toLowerCase()) ||
+//           r.category.includes(keyword.toLowerCase())
+//       );
+//       res.render("index", { rest, keyword: keyword });
+//     })
+//     .catch((err) => console.log(err));
+// });
 
 // ----------編輯餐廳----------
 router.get("/:restaurantId/edit", (req, res) => {
