@@ -1,5 +1,5 @@
 const passport = require("passport");
-const LocalStrategy = require("passport-local");
+const LocalStrategy = require("passport-local").Strategy;
 const User = require("../models/user");
 module.exports = (app) => {
   // 初始化passport module
@@ -16,7 +16,7 @@ module.exports = (app) => {
           .then((user) => {
             if (!user) {
               return done(null, false, {
-                mseeage: "That email is not registered",
+                message: "That email is not registered",
               });
             }
             if (user.password !== password) {
