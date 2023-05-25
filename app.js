@@ -5,6 +5,7 @@ const exphbs = require("express-handlebars");
 const routes = require("./routes");
 require("./config/mongoose");
 const app = express();
+const usePassport = require("./config/passport");
 
 // const port = 3000;
 const PORT = process.env.PORT || 3000;
@@ -24,6 +25,7 @@ app.use(
   })
 );
 app.use(routes);
+usePassport(app);
 
 ////////////////////////////////////////
 app.listen(PORT, () => {
