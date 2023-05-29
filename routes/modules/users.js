@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../../models/user");
 const passport = require("passport");
-
+const bcrypt = require("bcryptjs");
 router.get("/login", (req, res) => {
   res.render("login");
 });
@@ -43,7 +43,6 @@ router.post("/register", (req, res) => {
   User.findOne({ email }).then((user) => {
     if (user) {
       errors.push({ message: "已經註冊過" });
-      // console.log("already registered");
       // 停在原頁面，但保留使用者輸入的表單內容
       return res.render("register", {
         errors,
@@ -53,9 +52,14 @@ router.post("/register", (req, res) => {
         confirmPassword,
       });
     }
-    return User.create({ name: name || "No Name", email, password })
-      .then(() => res.redirect("/"))
-      .catch((err) => console.log(err));
+    return bcrypt
+      .genSalt(10)
+      .then((salt) => bcrypt.hash(password, salt))
+      .then((hash) =>
+        User.create({ name: name || "No Name", email, password: hash })
+          .then(() => res.redirect("/"))
+          .catch((err) => console.log(err))
+      );
   });
 });
 router.get("/logout", (req, res) => {
